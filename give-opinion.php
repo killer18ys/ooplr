@@ -78,9 +78,9 @@ if (Input::exists()) {
         <select name="category" id="category">
             <option value="0">Моля изберете</option>
            <?php 
-               $main_categories = $db->get_all('main_categories')->results();
-               foreach ($main_categories as $category) {
-                echo "<option value='{$category->id}'>{$category->main_category}</option>";
+               $categories = $db->get('categories', array("perant_id", "=" , 0))->results();
+               foreach ($categories as $category) {
+                echo "<option value='{$category->id}'>{$category->category}</option>";
                }
             ?>
         </select>
@@ -105,6 +105,11 @@ if (Input::exists()) {
         <select name="subcategory-3" id="subcategory-3">
             <option value="0">Моля изберете</option>
         </select>
+    </div>
+
+    <div class="form-item-name" style="display:none">
+        <label for="item-name">Въведете името на продукта</label>
+        <input type="text" id="item-name" name="item-name">
     </div>
 
     <div class="opinion-field-wrapper">
@@ -183,30 +188,45 @@ if (Input::exists()) {
 
 <script type="text/javascript">
 $(document).ready(function() {
+
+
+
     function fillCategories(selectField, selectToFill, valueName){
         $(selectField).change(function() {
             var value = $(this).val();
             var $subCatWrapp = $(selectToFill).parent('.form-item-select.sub');
+            var $itemNameWrapp = $('.form-item-name');
+
 
             if (value == 0) {
                 if (selectField == "#category") {
                     $('.form-item-select.sub').hide();
                 }
                 $subCatWrapp.hide();
+
             }else{
-                $subCatWrapp.show();
                 var obj = jQuery.parseJSON( '{"'+ valueName + '":"' + value + '"}' );
 
+
                 $.post('functions/category-process.php', obj, function(data) {
-                   $(selectToFill).html(data);
+
+                    if (data.trim() != "") {
+                        $subCatWrapp.show();
+                        $(selectToFill).html(data);
+                    }else{
+                        $itemNameWrapp.show();
+                    }
+
+
+
                 });
             }
         });
     }
 
-    fillCategories("#category", "#subcategory-1", "subCat_1");
-    fillCategories("#subcategory-1", "#subcategory-2", "subCat_2");
-    fillCategories("#subcategory-2", "#subcategory-3", "subCat_3");
+    fillCategories("#category", "#subcategory-1", "category");
+    fillCategories("#subcategory-1", "#subcategory-2", "subCat_1");
+    // fillCategories("#subcategory-2", "#subcategory-3", "subCat_2"); IF you need more sub-categories
 
 });
 

@@ -77,10 +77,6 @@ class DB{
 			return $this->action('SELECT *', $table, $where);
 		}
 
-		public function get_all($table){
-			return $this->action('SELECT *', $table);
-		}
-
 		public function delete($table, $where){
 			return $this->action('DELETE', $table, $where);
 		}
